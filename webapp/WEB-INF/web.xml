@@ -5,6 +5,16 @@
 		  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          version="2.5">
 
+    <servlet>
+        <servlet-name>JarServlet</servlet-name>
+        <servlet-class>com.prettybit.JarServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>JarServlet</servlet-name>
+        <url-pattern>/jar</url-pattern>
+    </servlet-mapping>
+
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
