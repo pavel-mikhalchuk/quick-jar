@@ -14,7 +14,7 @@ public class JarServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String code = req.getParameter("code");
-        System.out.println(code);
+        System.out.println(code + "New Branch");
     }
 
 }
