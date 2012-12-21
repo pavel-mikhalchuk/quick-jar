@@ -12,7 +12,7 @@ import static org.apache.commons.io.FileUtils.writeStringToFile;
 /**
  * @author Pavel Mikhalchuk
  */
-public class Jar {
+public class JarKitchen {
 
     private File base = initBaseDir();
 
@@ -22,7 +22,7 @@ public class Jar {
         return base;
     }
 
-    public File make(String pkgName, String className, String code) throws IOException {
+    public File cook(String pkgName, String className, String code) throws IOException {
         cleanDirectory(base);
         compile(theClass(pkgName, className, code));
         make(classesDir(), createManifest(pkgName, className));
@@ -73,7 +73,7 @@ public class Jar {
 
     private File initBaseDir() {
         try {
-            File base = new File(System.getProperty("java.io.tmpdir"), "quickjar");
+            File base = new File(Storage.BASE, "kitchen");
             base.mkdirs();
             cleanDirectory(base);
             return base;

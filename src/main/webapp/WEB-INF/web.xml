@@ -15,6 +15,16 @@
         <url-pattern>/jar</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>RunServlet</servlet-name>
+        <servlet-class>com.prettybit.quickjar.RunServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>RunServlet</servlet-name>
+        <url-pattern>/run</url-pattern>
+    </servlet-mapping>
+
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>

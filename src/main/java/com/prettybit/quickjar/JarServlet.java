@@ -14,7 +14,7 @@ import static org.apache.commons.io.FileUtils.readFileToByteArray;
  */
 public class JarServlet extends HttpServlet {
 
-    private Jar jar = new Jar();
+    private JarKitchen kitchen = new JarKitchen();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -22,7 +22,10 @@ public class JarServlet extends HttpServlet {
         String className = request.getParameter("class");
         String code = request.getParameter("code");
 
-        write(jar.make(pkgName, className, code), response);
+        File jar = kitchen.cook(pkgName, className, code);
+        DB.add(className + ".jar", jar);
+
+        response.sendRedirect("");
     }
 
     private void write(File jar, HttpServletResponse response) throws IOException {
