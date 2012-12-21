@@ -1,4 +1,4 @@
-package com.prettybit;
+package com.prettybit.quickjar;
 
 /**
  * @author Pavel Mikhalchuk

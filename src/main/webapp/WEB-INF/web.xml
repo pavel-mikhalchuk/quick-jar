@@ -7,7 +7,7 @@
 
     <servlet>
         <servlet-name>JarServlet</servlet-name>
-        <servlet-class>com.prettybit.JarServlet</servlet-class>
+        <servlet-class>com.prettybit.quickjar.JarServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
