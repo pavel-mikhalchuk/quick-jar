@@ -1,4 +1,6 @@
-package com.prettybit.quickjar;
+package com.prettybit.quickjar.web;
+
+import com.prettybit.quickjar.DB;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

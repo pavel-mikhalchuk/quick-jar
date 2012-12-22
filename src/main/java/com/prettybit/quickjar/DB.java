@@ -15,8 +15,8 @@ import static org.apache.commons.io.FileUtils.copyFile;
  */
 public class DB {
 
-    public static void add(String name, File jar) throws IOException {
-        copyFile(jar, new File(BASE, get(name) == null ? name : name + "-" + new Date()));
+    public static void add(String className, File jar) throws IOException {
+        copyFile(jar, new File(BASE, generateJarName(className)));
     }
 
     public static List<File> list() {
@@ -33,6 +33,10 @@ public class DB {
             if (file.getName().equals(name)) return file;
         }
         return null;
+    }
+
+    private static String generateJarName(String className) {
+        return get(className + ".jar") == null ? className + ".jar" : className + " - " + new Date() + ".jar";
     }
 
 }

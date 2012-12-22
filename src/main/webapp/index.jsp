@@ -4,29 +4,42 @@
 <html>
 <head>
     <title>Quick Jar</title>
-    <script type='text/javascript'>
-        var source = new EventSource('run');
+    <%--<script type='text/javascript'>--%>
+    <%--var source = new EventSource('run');--%>
 
-        source.onmessage = function (event) {
-            var console = document.getElementById('console');
-            console.innerHTML += event.data + "<br>";
-        };
+    <%--source.onmessage = function (event) {--%>
+    <%--var console = document.getElementById('console');--%>
+    <%--console.innerHTML += event.data + "<br>";--%>
+    <%--};--%>
 
-        source.addEventListener("end", function () {
-            source.close();
-        });
-    </script>
+    <%--source.addEventListener("end", function () {--%>
+    <%--source.close();--%>
+    <%--});--%>
+    <%--</script>--%>
 </head>
 <body>
 <div style="text-align: center;">
     <h1>Build A Jar Quickly</h1>
 
-    <form name="new-jar" action="jar" method="POST" style="width: 35%; float: left;">
-        <div><input name="pkg" type="text" value="Package Name..."/></div>
+    <form name="new-jar" action="rest/jar" method="POST" style="width: 35%; float: left;">
+        <div><input name="pkg" type="text" value="com.prettybit.quickjar"/></div>
 
-        <div><input name="class" type="text" value="Class Name..."/></div>
+        <div><input name="class" type="text" value="Test"/></div>
 
-        <textarea name="code" rows="20" cols="40">Put your code in here...</textarea>
+        <textarea name="code" rows="20" cols="40">
+            package com.prettybit.quickjar;
+
+            /**
+            * @author Pavel Mikhalchuk
+            */
+            public class Test {
+
+            public static void main(String[] args) {
+            System.out.println("First Quick Jar");
+            }
+
+            }
+        </textarea>
 
         <div><input name="code" type="submit" value="Build!"/></div>
     </form>
