@@ -4,29 +4,65 @@
 <html>
 <head>
     <title>Quick Jar</title>
-    <%--<script type='text/javascript'>--%>
-    <%--var source = new EventSource('run');--%>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.js"></script>
+    <script type='text/javascript'>
+        function makeJar(pkg, className, code) {
+            document.getElementById('make').disabled = true;
 
-    <%--source.onmessage = function (event) {--%>
-    <%--var console = document.getElementById('console');--%>
-    <%--console.innerHTML += event.data + "<br>";--%>
-    <%--};--%>
+            document.getElementById('console').innerHTML = '';
 
-    <%--source.addEventListener("end", function () {--%>
-    <%--source.close();--%>
-    <%--});--%>
-    <%--</script>--%>
+            var source = new EventSource('jar/console');
+
+            source.onmessage = function (message) {
+                document.getElementById('console').innerHTML += message.data;
+            };
+
+            source.addEventListener("start", function () {
+                document.getElementById('console').innerHTML += 'Open';
+                $.post('jar/make/', { pkg: pkg, class: className, code: code });
+            });
+
+            source.addEventListener("end", function () {
+                document.getElementById('console').innerHTML += 'Close';
+                source.close();
+                document.getElementById('make').disabled = false;
+            });
+        }
+
+        function runJar(name) {
+            document.getElementById('run').disabled = true;
+
+            document.getElementById('console').innerHTML = '';
+
+            var source = new EventSource('jar/console');
+
+            source.onmessage = function (message) {
+                document.getElementById('console').innerHTML += message.data;
+            };
+
+            source.addEventListener("start", function () {
+                document.getElementById('console').innerHTML += 'Open';
+                $.get('jar/run/' + name);
+            });
+
+            source.addEventListener("end", function () {
+                document.getElementById('console').innerHTML += 'Close';
+                source.close();
+                document.getElementById('run').disabled = false;
+            });
+        }
+    </script>
 </head>
 <body>
 <div style="text-align: center;">
     <h1>Build A Jar Quickly</h1>
 
-    <form name="new-jar" action="rest/jar" method="POST" style="width: 35%; float: left;">
-        <div><input name="pkg" type="text" value="com.prettybit.quickjar"/></div>
+    <div style="width: 35%; float: left;">
+        <div><input id="pkg" type="text" value="com.prettybit.quickjar"/></div>
 
-        <div><input name="class" type="text" value="Test"/></div>
+        <div><input id="class" type="text" value="Test"/></div>
 
-        <textarea name="code" rows="20" cols="40">
+        <textarea id="code" rows="20" cols="40">
             package com.prettybit.quickjar;
 
             /**
@@ -41,16 +77,28 @@
             }
         </textarea>
 
-        <div><input name="code" type="submit" value="Build!"/></div>
-    </form>
+        <div><input type="button" id="make" value="Make"
+                    onclick="makeJar(document.getElementById('pkg').value, document.getElementById('class').value, document.getElementById('code').value)"/>
+        </div>
+    </div>
 
-    <div id="jar-list" style="width: 35%; float: left;">
+    <div style="width: 30%; float: left;">
         <c:choose>
             <c:when test="<%=!DB.list().isEmpty()%>">
                 <h3>Your Jars</h3>
-                <c:forEach items="<%=DB.list()%>" var="jar">
-                    <div>${jar.name}</div>
-                </c:forEach>
+                <table border="1" style="width: 100%;">
+                    <c:forEach items="<%=DB.list()%>" var="jar">
+                        <tr>
+                            <td>${jar.name}</td>
+                            <td>
+                                <form action="jar/delete/${jar.name}" method="GET">
+                                    <input type="submit" value="X"/>
+                                </form>
+                                <input type="button" id="run" value="R" onclick="runJar('${jar.name}')"/>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </table>
             </c:when>
             <c:otherwise>
                 NO JARS
@@ -58,8 +106,9 @@
         </c:choose>
     </div>
 
-    <div id="console" style="width: 30%; float: left;">
-        <h3>Running Jar</h3>
+    <div style="width: 35%; float: left; text-align: center">
+        <h3>Console</h3>
+        <textarea id="console" rows="20" cols="40"></textarea>
     </div>
 </div>
 </body>

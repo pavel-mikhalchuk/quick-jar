@@ -3,6 +3,7 @@ package com.prettybit.quickjar;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -20,12 +21,13 @@ public class DB {
     }
 
     public static List<File> list() {
-        return newArrayList(BASE.listFiles(new FileFilter() {
+        File[] files = BASE.listFiles(new FileFilter() {
             @Override
             public boolean accept(File file) {
                 return file.getName().endsWith(".jar");
             }
-        }));
+        });
+        return files != null ? newArrayList(files) : Collections.<File>emptyList();
     }
 
     public static File get(String name) {
@@ -33,6 +35,10 @@ public class DB {
             if (file.getName().equals(name)) return file;
         }
         return null;
+    }
+
+    public static void delete(String name) {
+        if (get(name) != null) get(name).delete();
     }
 
     private static String generateJarName(String className) {

@@ -1,10 +1,7 @@
 package com.prettybit.quickjar;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import static org.apache.commons.io.FileUtils.cleanDirectory;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
@@ -12,28 +9,31 @@ import static org.apache.commons.io.FileUtils.writeStringToFile;
 /**
  * @author Pavel Mikhalchuk
  */
-public class JarKitchen {
+public class Jar {
 
     private File base = initBaseDir();
 
-    public final File JAR = new File(base, "JAR.jar");
+    private final File JAR = new File(base, "JAR.jar");
 
     public File baseDir() {
         return base;
     }
 
-    public File cook(String pkgName, String className, String code) throws IOException {
+    public File make(String pkgName, String className, String code) throws IOException {
         cleanDirectory(base);
         compile(theClass(pkgName, className, code));
         make(classesDir(), createManifest(pkgName, className));
+        Console.getWriter().close();
         return JAR;
     }
 
+    public void run(File file) throws IOException {
+        Console.getWriter().write(Process.run("java", "-jar", file.getAbsolutePath()));
+        Console.getWriter().close();
+    }
+
     private void compile(File clazz) throws IOException {
-        ProcessBuilder builder = new ProcessBuilder("javac", "-verbose", clazz.getAbsolutePath(), "-d", classesDir().getAbsolutePath());
-        builder.redirectErrorStream(true);
-        Process process = builder.start();
-        printProcessOutput(process.getInputStream());
+        Console.getWriter().write(Process.run("javac", "-verbose", clazz.getAbsolutePath(), "-d", classesDir().getAbsolutePath()));
     }
 
     private File createManifest(String pkgName, String className) throws IOException {
@@ -43,10 +43,7 @@ public class JarKitchen {
     }
 
     private void make(File classes, File manifest) throws IOException {
-        ProcessBuilder builder = new ProcessBuilder("jar", "cvfm", JAR.getAbsolutePath(), manifest.getAbsolutePath(), "-C", classes.getAbsolutePath(), ".");
-        builder.redirectErrorStream(true);
-        Process process = builder.start();
-        printProcessOutput(process.getInputStream());
+        Console.getWriter().write(Process.run("jar", "cvfm", JAR.getAbsolutePath(), manifest.getAbsolutePath(), "-C", classes.getAbsolutePath(), "."));
     }
 
     private File theClass(String pkgName, String className, String code) throws IOException {
@@ -61,14 +58,6 @@ public class JarKitchen {
         File result = new File(base, "classes");
         result.mkdirs();
         return result;
-    }
-
-    private void printProcessOutput(InputStream stream) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(stream));
-        String line;
-        while ((line = br.readLine()) != null) {
-            System.out.println(line);
-        }
     }
 
     private File initBaseDir() {
