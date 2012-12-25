@@ -333,7 +333,7 @@
 }
 
 .flexigrid div.hDiv th, .flexigrid  div.bDiv td
-	/* common cell properties*/   {
+	/* common cell properties*/     {
     text-align: left;
     border-right: 1px solid #ddd;
     border-left: 1px solid #fff;
@@ -344,7 +344,7 @@
 }
 
 .flexigrid div.hDiv th div, .flexigrid  div.bDiv td  div, div.colCopy div
-	/* common inner cell properties*/   {
+	/* common inner cell properties*/    {
     padding: 5px;
     border-left: 0px solid #fff;
 }
@@ -610,6 +610,6 @@ div.pGroup {
 
 /* ie adjustments */
 .flexigrid.ie div.hDiv th div, .flexigrid.ie  div.bDiv td  div, div.colCopy.ie div
-	/* common inner cell properties*/   {
+	/* common inner cell properties*/    {
     overflow: hidden;
 }
