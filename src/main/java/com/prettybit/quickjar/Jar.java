@@ -1,5 +1,7 @@
 package com.prettybit.quickjar;
 
+import com.prettybit.quickjar.web.console.Console;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -23,17 +25,17 @@ public class Jar {
         cleanDirectory(base);
         compile(theClass(pkgName, className, code));
         make(classesDir(), createManifest(pkgName, className));
-        Console.getWriter().close();
+        Console.close();
         return JAR;
     }
 
     public void run(File file) throws IOException {
-        Console.getWriter().write(Process.run("java", "-jar", file.getAbsolutePath()));
-        Console.getWriter().close();
+        Console.write(Process.run("java", "-jar", file.getAbsolutePath()));
+        Console.close();
     }
 
     private void compile(File clazz) throws IOException {
-        Console.getWriter().write(Process.run("javac", "-verbose", clazz.getAbsolutePath(), "-d", classesDir().getAbsolutePath()));
+        Console.write(Process.run("javac", "-verbose", clazz.getAbsolutePath(), "-d", classesDir().getAbsolutePath()));
     }
 
     private File createManifest(String pkgName, String className) throws IOException {
@@ -43,7 +45,7 @@ public class Jar {
     }
 
     private void make(File classes, File manifest) throws IOException {
-        Console.getWriter().write(Process.run("jar", "cvfm", JAR.getAbsolutePath(), manifest.getAbsolutePath(), "-C", classes.getAbsolutePath(), "."));
+        Console.write(Process.run("jar", "cvfm", JAR.getAbsolutePath(), manifest.getAbsolutePath(), "-C", classes.getAbsolutePath(), "."));
     }
 
     private File theClass(String pkgName, String className, String code) throws IOException {

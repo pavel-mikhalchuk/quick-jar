@@ -1,4 +1,4 @@
-package com.prettybit.quickjar;
+package com.prettybit.quickjar.web.console;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
@@ -12,17 +12,17 @@ import java.io.PrintWriter;
  */
 public class ConsoleWriter {
 
-    private PrintWriter writer;
-    private boolean open = true;
+    private Writer writer;
+    private boolean open;
 
     public ConsoleWriter(HttpServletResponse response) throws IOException {
-        writer = response.getWriter();
+        writer = new Writer(response.getWriter());
         response.setHeader("Content-Type", "text/event-stream");
         response.setHeader("Cache-Control", "no-cache");
-        open();
     }
 
     public void open() throws IOException {
+        open = true;
         writer.print("event: start\n");
         writer.print("data: \n\n");
         writer.flush();
@@ -50,6 +50,26 @@ public class ConsoleWriter {
         writer.print("data: \n\n");
         writer.flush();
         open = false;
+    }
+
+    private class Writer {
+
+        private PrintWriter writer;
+
+        private Writer(PrintWriter writer) {
+            this.writer = writer;
+        }
+
+        public void print(String string) {
+            System.out.print(string);
+            writer.print(string);
+        }
+
+        public void flush() {
+            System.out.println("FLUSHED");
+            writer.flush();
+        }
+
     }
 
 }

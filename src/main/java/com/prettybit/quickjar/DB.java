@@ -3,6 +3,7 @@ package com.prettybit.quickjar;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -42,7 +43,7 @@ public class DB {
     }
 
     private static String generateJarName(String className) {
-        return get(className + ".jar") == null ? className + ".jar" : className + " - " + new Date() + ".jar";
+        return get(className + ".jar") == null ? className + ".jar" : className + " - " + new SimpleDateFormat("MM.dd.yyyy HH:mm:ss").format(new Date()) + ".jar";
     }
 
 }
