@@ -4,36 +4,61 @@
 <head>
     <title>Quick Jar</title>
     <link rel="stylesheet" type="text/css" href="flexigrid-1.1/css/flexigrid.css"/>
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.js"></script>
+    <script type="text/javascript" src="jquery-1.8.3/js/jquery-1.8.3.js"></script>
     <script type="text/javascript" src="flexigrid-1.1/js/flexigrid.js"></script>
     <script type='text/javascript'>
-        function run(button, start, end) {
-            button.disabled = true;
+        function Console() {
 
-            $('#console').html('');
+            var console = $('#console');
 
-            var source = new EventSource('jar/console');
-
-            source.onmessage = function (message) {
-                $('#console').append(message.data);
-                $('#console').scrollTop($('#console').prop('scrollHeight'));
+            this.clear = function () {
+                console.html('');
             };
 
-            source.addEventListener("start", function () {
-                start();
-            });
+            this.append = function (string) {
+                console.append(string);
+                console.scrollTop(console.prop('scrollHeight'));
+            };
 
-            source.addEventListener("end", function () {
-                source.close();
-                end();
-                button.disabled = false;
-            });
+            this.clear();
+
+        }
+
+        function BSE() {
+
+            var console = new Console();
+
+            var start;
+            var end;
+
+            this.run = function (button) {
+                button.disabled = true;
+
+                var source = new EventSource('jar/console');
+
+                source.onmessage = function (message) {
+                    console.append(message.data);
+                };
+
+                source.addEventListener("start", start);
+
+                source.addEventListener("end", function () {
+                    source.close();
+                    end();
+                    button.disabled = false;
+                });
+            };
+
         }
 
         function makeJar(pkg, className, code, button) {
-            run(button, function () {
+            var bse = new BSE();
+            bse.start = function () {
                 $.post('jar/make/', { pkg: pkg, class: className, code: code });
-            }, reFetchJars);
+            };
+            bse.end = reFetchJars;
+
+            bse.run(button);
         }
 
         function deleteJar(name, button) {
@@ -45,15 +70,40 @@
         }
 
         function runJar(name, button) {
-            run(button, function () {
+            var bse = new BSE();
+            bse.start = function () {
                 $.get('jar/run/' + name)
-            }, function () {
-            });
+            };
+
+            bse.run(button);
         }
 
         function reFetchJars() {
             $('#jar-list').flexReload();
         }
+
+        //        function run(button, start, end) {
+        //            button.disabled = true;
+        //
+        //            console.html('');
+        //
+        //            var source = new EventSource('jar/console');
+        //
+        //            source.onmessage = function (message) {
+        //                $('#console').append(message.data);
+        //                $('#console').scrollTop($('#console').prop('scrollHeight'));
+        //            };
+        //
+        //            source.addEventListener("start", function () {
+        //                start();
+        //            });
+        //
+        //            source.addEventListener("end", function () {
+        //                source.close();
+        //                end();
+        //                button.disabled = false;
+        //            });
+        //        }
     </script>
 </head>
 <body>
@@ -105,7 +155,7 @@
 
     <div style="width: 35%; float: left; text-align: center;">
         <h3>Console</h3>
-        <textarea id="console" style="font-size: 6px; width: 330px; height: 295px;"></textarea>
+        <textarea id="console" style="font-size: 6px; width: 330px; height: 295px;">2323</textarea>
     </div>
 </div>
 </body>
