@@ -1,5 +1,6 @@
 package com.prettybit.quickjar;
 
+import com.prettybit.quickjar.web.console.Console;
 import org.junit.Test;
 
 import java.io.File;
@@ -17,12 +18,20 @@ public class JarTest {
     private Jar jar = new Jar();
 
     @Test
-    public void testCook() throws IOException {
-        String pkgName = "com.prettybit.quickjar";
-        String className = "Test";
-        String code = testCode();
+    public void testPkgName() {
+        assertEquals("com.prettybit.quickjar", jar.pkgName(testCode()));
+    }
 
-        jar.make(pkgName, className, code);
+    @Test
+    public void testClassName() {
+        assertEquals("Test", jar.className(testCode()));
+    }
+
+    @Test
+    public void testCook() throws IOException {
+        Console.open(System.out);
+        jar.make(testCode());
+        Console.close();
 
         assertTrue(new File(jar.baseDir(), "src").exists());
         assertTrue(new File(new File(jar.baseDir(), "src"), "com").exists());
@@ -38,7 +47,7 @@ public class JarTest {
 
         assertEquals("Main-Class: com.prettybit.quickjar.Test\n", readFileToString(new File(jar.baseDir(), "MANIFEST.txt")));
 
-        assertTrue(new File(jar.baseDir(), "JAR.jar").exists());
+        assertTrue(new File(jar.baseDir(), "Test.jar").exists());
     }
 
     private String testCode() {

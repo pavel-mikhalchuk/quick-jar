@@ -3,6 +3,7 @@ package com.prettybit.quickjar.web.console;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -23,6 +24,16 @@ public class Console {
             WRITER = new ConsoleWriter(response);
             WRITER.open();
             waitUntilClosed();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public static void open(OutputStream stream) throws IOException {
+        try {
+            lock.lock();
+            WRITER = new ConsoleWriter(stream);
+            WRITER.open();
         } finally {
             lock.unlock();
         }

@@ -15,23 +15,22 @@ public class Jar {
 
     private File base = initBaseDir();
 
-    private final File JAR = new File(base, "JAR.jar");
+    private File JAR;
 
     public File baseDir() {
         return base;
     }
 
-    public File make(String pkgName, String className, String code) throws IOException {
+    public File make(String code) throws IOException {
+        JAR = new File(base, className(code) + ".jar");
         cleanDirectory(base);
-        compile(theClass(pkgName, className, code));
-        make(classesDir(), createManifest(pkgName, className));
-        Console.close();
+        compile(theClass(code));
+        make(classesDir(), createManifest(pkgName(code), className(code)));
         return JAR;
     }
 
     public void run(File file) throws IOException {
         Console.write(Process.run("java", "-jar", file.getAbsolutePath()));
-        Console.close();
     }
 
     private void compile(File clazz) throws IOException {
@@ -48,10 +47,10 @@ public class Jar {
         Console.write(Process.run("jar", "cvfm", JAR.getAbsolutePath(), manifest.getAbsolutePath(), "-C", classes.getAbsolutePath(), "."));
     }
 
-    private File theClass(String pkgName, String className, String code) throws IOException {
-        File pkg = new File(new File(base, "src"), pkgName.replaceAll("\\.", File.separator));
+    private File theClass(String code) throws IOException {
+        File pkg = new File(new File(base, "src"), pkgName(code).replaceAll("\\.", File.separator));
         pkg.mkdirs();
-        File clazz = new File(pkg, className + ".java");
+        File clazz = new File(pkg, className(code) + ".java");
         writeStringToFile(clazz, code);
         return clazz;
     }
@@ -71,6 +70,18 @@ public class Jar {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected String pkgName(String code) {
+        int pkgStart = code.indexOf("package ") + 8;
+        int pkgEnd = code.indexOf(";");
+        return code.substring(pkgStart, pkgEnd);
+    }
+
+    protected String className(String code) {
+        int pkgStart = code.indexOf("class ") + 6;
+        int pkgEnd = code.indexOf(" {");
+        return code.substring(pkgStart, pkgEnd);
     }
 
 }

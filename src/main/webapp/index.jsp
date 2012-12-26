@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Quick Jar</title>
+    <title>Build A Quick Jar</title>
     <link rel="stylesheet" type="text/css" href="flexigrid-1.1/css/flexigrid.css"/>
     <script type="text/javascript" src="jquery-1.8.3/js/jquery-1.8.3.js"></script>
     <script type="text/javascript" src="flexigrid-1.1/js/flexigrid.js"></script>
@@ -16,7 +16,7 @@
             };
 
             this.append = function (string) {
-                console.append(string);
+                console.append(string + '\n');
                 console.scrollTop(console.prop('scrollHeight'));
             };
 
@@ -28,11 +28,14 @@
 
             var console = new Console();
 
-            var start;
-            var end;
+            this.control = undefined;
+            this.start = function () {
+            };
+            this.end = function () {
+            };
 
-            this.run = function (button) {
-                button.disabled = true;
+            BSE.prototype.run = function () {
+                this.disableControl();
 
                 var source = new EventSource('jar/console');
 
@@ -40,25 +43,44 @@
                     console.append(message.data);
                 };
 
-                source.addEventListener("start", start);
+                source.addEventListener("start", (function (bse) {
+                    function start() {
+                        bse.start();
+                    }
 
-                source.addEventListener("end", function () {
-                    source.close();
-                    end();
-                    button.disabled = false;
-                });
+                    return start;
+                })(this));
+
+                source.addEventListener("end", (function (bse) {
+                    function end() {
+                        source.close();
+                        bse.end();
+                        bse.enableControl();
+                    }
+
+                    return end;
+                })(this));
             };
+
+            this.enableControl = function () {
+                if (this.control) this.control.disabled = false;
+            };
+
+            this.disableControl = function () {
+                if (this.control) this.control.disabled = true;
+            }
 
         }
 
-        function makeJar(pkg, className, code, button) {
+        function makeJar(button) {
             var bse = new BSE();
+            bse.control = button;
             bse.start = function () {
-                $.post('jar/make/', { pkg: pkg, class: className, code: code });
+                $.post('jar/make/', { code: $('#code').val() });
             };
             bse.end = reFetchJars;
 
-            bse.run(button);
+            bse.run();
         }
 
         function deleteJar(name, button) {
@@ -71,75 +93,29 @@
 
         function runJar(name, button) {
             var bse = new BSE();
+            bse.control = button;
             bse.start = function () {
                 $.get('jar/run/' + name)
             };
 
-            bse.run(button);
+            bse.run();
         }
 
         function reFetchJars() {
             $('#jar-list').flexReload();
         }
 
-        //        function run(button, start, end) {
-        //            button.disabled = true;
-        //
-        //            console.html('');
-        //
-        //            var source = new EventSource('jar/console');
-        //
-        //            source.onmessage = function (message) {
-        //                $('#console').append(message.data);
-        //                $('#console').scrollTop($('#console').prop('scrollHeight'));
-        //            };
-        //
-        //            source.addEventListener("start", function () {
-        //                start();
-        //            });
-        //
-        //            source.addEventListener("end", function () {
-        //                source.close();
-        //                end();
-        //                button.disabled = false;
-        //            });
-        //        }
     </script>
 </head>
 <body>
 <div style="text-align: center;">
-    <h1>Build A Jar Quickly</h1>
-
-    <div style="width: 35%; float: left;">
-        <h3>New Jar</h3>
-        <textarea id="code" style="width: 330px; height: 295px;">
-            package com.prettybit.quickjar;
-
-            /**
-            * @author Pavel Mikhalchuk
-            */
-            public class Test {
-
-            public static void main(String[] args) {
-            System.out.println("First Quick Jar");
-            }
-
-            }
-        </textarea>
-
-        <div>
-            <input type="button" value="Make"
-                   onclick="makeJar('com.prettybit.quickjar', 'Test', $('#code').val(), this)"/>
-        </div>
-    </div>
-
     <div style="width: 30%; float: left;">
         <h3>Your Jars</h3>
 
         <table id="jar-list"></table>
         <script type="text/javascript">
             $('#jar-list').flexigrid({
-                url: 'jar/list',
+                url: 'jar/table',
                 dataType: 'json',
                 colModel: [
                     {display: 'Name', width: 218},
@@ -153,9 +129,36 @@
         </script>
     </div>
 
-    <div style="width: 35%; float: left; text-align: center;">
-        <h3>Console</h3>
-        <textarea id="console" style="font-size: 6px; width: 330px; height: 295px;">2323</textarea>
+    <div style="width: 70%; float: left;">
+        <div>
+            <h3>New Jar</h3>
+            <textarea id="code" style="width: 900px; height: 250px;">
+                package com.prettybit.quickjar.test;
+
+                /**
+                * @author Pavel Mikhalchuk
+                */
+                public class PAPAPAP {
+
+                public static void main(String[] args) {
+                System.out.println("Loading...");
+                System.out.println("First Quick Jar");
+                System.out.println("Done!");
+                }
+
+                }
+            </textarea>
+
+            <div>
+                <input type="button" value="Make"
+                       onclick="makeJar(this)"/>
+            </div>
+        </div>
+
+        <div>
+            <h3>Console</h3>
+            <textarea id="console" style="font-size: 10px; width: 900px; height: 200px;"></textarea>
+        </div>
     </div>
 </div>
 </body>

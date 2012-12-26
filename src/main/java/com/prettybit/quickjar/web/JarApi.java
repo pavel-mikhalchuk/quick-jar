@@ -31,7 +31,7 @@ public class JarApi {
 
     @POST
     @Produces("application/json")
-    @Path("list")
+    @Path("table")
     public String list() {
         JSONObject table = new JSONObject();
         table.put("total", DB.list().size());
@@ -54,8 +54,9 @@ public class JarApi {
 
     @POST
     @Path("make")
-    public void make(@FormParam("pkg") String pkg, @FormParam("class") String className, @FormParam("code") String code) throws IOException {
-        DB.add(className, jar.make(pkg, className, code));
+    public void make(@FormParam("code") String code) throws IOException {
+        DB.add(jar.make(code));
+        Console.close();
     }
 
     @GET
@@ -68,6 +69,7 @@ public class JarApi {
     @Path("run/{name}")
     public void run(@PathParam("name") String name) throws IOException {
         jar.run(DB.get(name));
+        Console.close();
     }
 
     @GET

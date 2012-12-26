@@ -11,14 +11,15 @@ import java.util.List;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.prettybit.quickjar.Storage.BASE;
 import static org.apache.commons.io.FileUtils.copyFile;
+import static org.apache.commons.io.FilenameUtils.removeExtension;
 
 /**
  * @author Pavel Mikhalchuk
  */
 public class DB {
 
-    public static void add(String className, File jar) throws IOException {
-        copyFile(jar, new File(BASE, generateJarName(className)));
+    public static void add(File jar) throws IOException {
+        copyFile(jar, new File(BASE, generateJarName(jar)));
     }
 
     public static List<File> list() {
@@ -42,8 +43,10 @@ public class DB {
         if (get(name) != null) get(name).delete();
     }
 
-    private static String generateJarName(String className) {
-        return get(className + ".jar") == null ? className + ".jar" : className + " - " + new SimpleDateFormat("MM.dd.yyyy HH:mm:ss").format(new Date()) + ".jar";
+    private static String generateJarName(File jar) {
+        return get(jar.getName()) == null
+                ? jar.getName()
+                : removeExtension(jar.getName()) + "_" + new SimpleDateFormat("MMddyyyy'T'HHmmss").format(new Date()) + ".jar";
     }
 
 }

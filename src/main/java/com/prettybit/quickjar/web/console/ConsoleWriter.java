@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 
 /**
@@ -19,6 +20,10 @@ public class ConsoleWriter {
         writer = new Writer(response.getWriter());
         response.setHeader("Content-Type", "text/event-stream");
         response.setHeader("Cache-Control", "no-cache");
+    }
+
+    public ConsoleWriter(OutputStream stream) {
+        writer = new Writer(new PrintWriter(stream));
     }
 
     public void open() throws IOException {
@@ -66,7 +71,7 @@ public class ConsoleWriter {
         }
 
         public void flush() {
-            System.out.println("FLUSHED");
+            System.out.println("FLUSHED\n");
             writer.flush();
         }
 
